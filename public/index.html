@@ -1,5 +1,5 @@
 <!-- public/index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -18,7 +18,7 @@
         background-color: #fff;
         border: 1px solid #ccc;
         padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
       #messages {
         list-style-type: none;
@@ -57,55 +57,73 @@
   <body>
     <div id="chat">
       <ul id="messages"></ul>
-      <!-- The form includes fields for the user's name and message -->
+      <!-- Form for entering a username and a message -->
       <form id="message-form">
         <input id="username" type="text" placeholder="Your name" required />
         <input
           id="message"
-          autocomplete="off"
+          type="text"
           placeholder="Type your message"
           required
+          autocomplete="off"
         />
         <button type="submit">Send</button>
       </form>
     </div>
 
-    <!-- Include the Socket.IO client library -->
-    <script src="/socket.io/socket.io.js"></script>
     <script>
-      // Connect to the Socket.IO server
-      const socket = io();
-
-      // DOM elements
+      // DOM element references
       const form = document.getElementById("message-form");
       const usernameInput = document.getElementById("username");
       const messageInput = document.getElementById("message");
       const messagesList = document.getElementById("messages");
 
-      // Event listener for form submission
+      // Function to fetch and display messages
+      function fetchMessages() {
+        fetch("/messages")
+          .then((response) => response.json())
+          .then((data) => {
+            // Clear the current messages
+            messagesList.innerHTML = "";
+            // Append each message to the list
+            data.messages.forEach((msg) => {
+              const li = document.createElement("li");
+              li.textContent = `${msg.username}: ${msg.message}`;
+              messagesList.appendChild(li);
+            });
+            // Optional: Scroll to the bottom of the list
+            messagesList.scrollTop = messagesList.scrollHeight;
+          })
+          .catch((error) => console.error("Error fetching messages:", error));
+      }
+
+      // Poll for new messages every 2000 milliseconds (2 seconds)
+      setInterval(fetchMessages, 2000);
+      // Initial fetch on page load
+      fetchMessages();
+
+      // Handle form submission
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        if (usernameInput.value && messageInput.value) {
-          // Prepare the message data including the sender's name.
-          const data = {
-            username: usernameInput.value,
-            message: messageInput.value,
-          };
-          // Emit the 'chat message' event with the message data.
-          socket.emit("chat message", data);
-          // Clear the message input field after sending.
-          messageInput.value = "";
-        }
-      });
+        const username = usernameInput.value;
+        const message = messageInput.value;
 
-      // Listen for 'chat message' events from the server
-      socket.on("chat message", (data) => {
-        // Create a new list item for the message.
-        const item = document.createElement("li");
-        item.textContent = `${data.username}: ${data.message}`;
-        messagesList.appendChild(item);
-        // Optional: Scroll to the bottom of the messages list.
-        messagesList.scrollTop = messagesList.scrollHeight;
+        // Send a POST request to add a new message
+        fetch("/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, message }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error sending message");
+            }
+            // Clear the message input field after sending
+            messageInput.value = "";
+          })
+          .catch((error) => console.error("Error:", error));
       });
     </script>
   </body>
