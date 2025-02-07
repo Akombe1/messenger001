@@ -8,6 +8,10 @@ app.use(express.json());
 // Serve static files (HTML, CSS, client-side JavaScript) from the "public" directory.
 app.use(express.static('public'));
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
 // In-memory storage for messages
 let messages = [];
 
@@ -18,13 +22,19 @@ let messages = [];
 app.get('/messages', (req, res) => {
   res.json({ messages });
 });
-
+/**
+ * GET /page2
+ * Serves a "Hello World" web page. We could also serve a static HTML file here.
+ */
+app.get('/page2', (req, res) => {
+  res.send('<h1>Hello World</h1>');
+});
 /**
  * POST /messages
  * Expects a JSON payload with "username" and "message".
  * Adds the new message to the messages array.
  */
-app.post('/messages', (req, res) => {
+app.post('/message', (req, res) => {
   const { username, message } = req.body;
   if (!username || !message) {
     return res.status(400).json({ error: 'Both username and message are required.' });
