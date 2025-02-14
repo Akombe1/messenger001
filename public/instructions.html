@@ -13,7 +13,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
         }
 
         #chat {
@@ -23,19 +22,7 @@
             border: 1px solid #ccc;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        #messages {
-            list-style-type: none;
-            padding: 0;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        #messages li {
-            padding: 8px 10px;
-            border-bottom: 1px solid #eee;
+            text-align: center;
         }
 
         .input-container {
@@ -61,50 +48,9 @@
         }
 
         #sendBtn:hover {
-            background-color: darkred;
+            background-color: rgb(35, 139, 0);
         }
     </style>
- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const usernameInput = document.getElementById("username");
-        const messageInput = document.getElementById("message");
-        const sendBtn = document.getElementById("sendBtn");
-
-        async function sendMessage() {
-            const username = usernameInput.value.trim();
-            const message = messageInput.value.trim();
-
-            if (!username || !message) {
-                alert("Please enter your name and a message before proceeding.");
-                return;
-            }
-
-            try {
-                const response = await fetch("/message", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, message }),
-                });
-
-                if (!response.ok) {
-                    throw new Error("Error sending message.");
-                }
-
-                // Store username and advance to `main.html`
-                localStorage.setItem("username", username);
-                window.location.href = "main.html";
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-
-        sendBtn.addEventListener("click", sendMessage);
-        messageInput.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") sendMessage();
-        });
-    });
-</script>
-
 </head>
 <body>
     <div id="chat">
@@ -116,7 +62,56 @@
             <input id="message" type="text" placeholder="Type your message" required autocomplete="off" />
             <button id="sendBtn" type="button">Submit</button>
         </div>
-        <ul id="messages"></ul>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const usernameInput = document.getElementById("username");
+            const messageInput = document.getElementById("message");
+            const sendBtn = document.getElementById("sendBtn");
+
+            async function sendMessage() {
+                const username = usernameInput.value.trim();
+                const message = messageInput.value.trim();
+
+                if (!username || !message) {
+                    alert("Please enter your name and a message before proceeding.");
+                    return;
+                }
+
+                try {
+                    console.log("Sending request to server...");
+                    const response = await fetch("/message", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username, message }),
+                        window.location.href = "main.html";
+
+                    });
+
+                    if (!response.ok) {
+                        window.location.href = "main.html";
+
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    // Store username for next page
+                 //   localStorage.setItem("username", username);
+
+                 //   console.log("Redirecting to main.html...");
+                    window.location.href = "main.html";
+                } catch (error) {
+                    console.error("Error sending message:", error);
+                }
+            }
+
+            sendBtn.addEventListener("click", sendMessage);
+            messageInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
