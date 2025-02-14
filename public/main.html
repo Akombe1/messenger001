@@ -19,6 +19,7 @@
         let gameCount = 0;
         let startTime;
         let reactionTimes = [];
+        let isWaitingForKeyPress = false;
 
         function playAudio() {
             let audio = new Audio('Max.mp3');
@@ -36,24 +37,31 @@
                 let randomImage = Math.random() < 0.5 ? 'left.png' : 'right.png';
                 document.body.style.backgroundImage = `url('${randomImage}')`;
                 startTime = Date.now();
+                isWaitingForKeyPress = true;
             }, randomDelay);
         }
 
-        function recordReaction() {
-            if (startTime) {
+        function recordReaction(event) {
+            if (isWaitingForKeyPress && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
                 let reactionTime = Date.now() - startTime;
                 reactionTimes.push(reactionTime);
                 document.body.style.backgroundImage = "url('center.png')";
                 gameCount++;
                 startTime = null;
-                showRandomBackground();
+                isWaitingForKeyPress = false;
+                if (gameCount < 5) {
+                    showRandomBackground();
+                } else {
+                    alert("Game Over! Your reaction times: " + reactionTimes.join(", ") + " ms");
+                    window.location.href = "main.html";
+                }
             }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             playAudio();
             showRandomBackground();
-            document.body.addEventListener("click", recordReaction);
+            document.addEventListener("keydown", recordReaction);
         });
     </script>
 </head>
