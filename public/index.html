@@ -74,7 +74,7 @@
         const messageInput = document.getElementById("message");
         const sendBtn = document.getElementById("sendBtn");
 
-        sendBtn.addEventListener("click", async function() {
+        async function submitData() {
             const username = usernameInput.value.trim();
             const message = messageInput.value.trim();
 
@@ -83,7 +83,6 @@
                 return;
             }
 
-            // Send data to the server
             try {
                 const response = await fetch("/message", {
                     method: "POST",
@@ -95,10 +94,17 @@
                     throw new Error("HTTP error! Status: " + response.status);
                 }
 
-                localStorage.setItem("username", username); // Store username locally
-                window.location.href = "instructions.html"; // Redirect to instructions page
+                localStorage.setItem("username", username);
+                window.location.href = "instructions.html";
             } catch (error) {
                 console.error("Error submitting user info:", error);
+            }
+        }
+
+        sendBtn.addEventListener("click", submitData);
+        messageInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                submitData();
             }
         });
     </script>
