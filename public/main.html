@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Time Game</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: url('center.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script>
+        let gameCount = 0;
+        let startTime;
+        let reactionTimes = [];
+
+        function playAudio() {
+            let audio = new Audio('Max.mp3');
+            audio.play();
+        }
+
+        function showRandomBackground() {
+            if (gameCount >= 3) {
+                alert("Game Over! Your reaction times: " + reactionTimes.join(", ") + " ms");
+                return;
+            }
+
+            let randomDelay = Math.floor(Math.random() * (10000 - 3000) + 3000);
+            setTimeout(() => {
+                let randomImage = Math.random() < 0.5 ? 'left.png' : 'right.png';
+                document.body.style.backgroundImage = `url('${randomImage}')`;
+                startTime = Date.now();
+            }, randomDelay);
+        }
+
+        function recordReaction() {
+            if (startTime) {
+                let reactionTime = Date.now() - startTime;
+                reactionTimes.push(reactionTime);
+                document.body.style.backgroundImage = "url('center.png')";
+                gameCount++;
+                startTime = null;
+                showRandomBackground();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            playAudio();
+            showRandomBackground();
+            document.body.addEventListener("click", recordReaction);
+        });
+    </script>
+</head>
+<body>
+</body>
+</html>
