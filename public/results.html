@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Results Table</title>
+    <title>Reaction Time Results</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,25 +30,17 @@
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
-            try {
-                const response = await fetch("/results");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                const tableBody = document.getElementById("results-body");
-                
-                // Sort by fastest reaction time
-                data.sort((a, b) => a.totalReactionTime - b.totalReactionTime);
-
-                data.forEach((entry) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `<td>${entry.username}</td><td>${entry.totalReactionTime} ms</td>`;
-                    tableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error("Error fetching results:", error);
+            const storedName = localStorage.getItem("username");
+            const storedReactionTime = localStorage.getItem("reactionTime");
+            if (!storedName || !storedReactionTime) {
+                document.body.innerHTML = "<h1>No results found</h1>";
+                return;
             }
+
+            const tableBody = document.getElementById("results-body");
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${storedName}</td><td>${storedReactionTime} ms</td>`;
+            tableBody.appendChild(row);
         });
     </script>
 </head>

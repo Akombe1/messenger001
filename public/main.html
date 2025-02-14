@@ -29,7 +29,13 @@
         function showRandomBackground() {
             if (gameCount >= 5) {
                 const totalReactionTime = reactionTimes.reduce((a, b) => a + b, 0);
-                localStorage.setItem("reactionTime", totalReactionTime);
+                const username = localStorage.getItem("username") || "Unknown";
+                
+                const results = JSON.parse(localStorage.getItem("results")) || [];
+                results.push({ username, totalReactionTime });
+                results.sort((a, b) => a.totalReactionTime - b.totalReactionTime);
+                localStorage.setItem("results", JSON.stringify(results));
+                
                 window.location.href = "results.html";
                 return;
             }
