@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const app = express();
 
@@ -9,48 +8,58 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/public/index.html');
 });
 
-// In-memory storage for messages
+// In-memory storage for messages and results
 let messages = [];
+let results = [];
 
 /**
  * GET /messages
  * Returns a JSON object containing all messages.
  */
 app.get('/messages', (req, res) => {
-  res.json({ messages });
-});
-/**
- * GET /page2
- * Serves a "Hello World" web page. We could also serve a static HTML file here.
- */
-app.get('/page2', (req, res) => {
-  res.send('<h1>Hello World</h1>');
-});
-/**
- * POST /messages
- * Expects a JSON payload with "username" and "message".
- * Adds the new message to the messages array.
- */
-app.post('/message', (req, res) => {
-  const { username, message } = req.body;
-  if (!username || !message) {
-    return res.status(400).json({ error: 'Both username and message are required.' });
-  }
-  // Optionally, include a timestamp for each message.
-  const newMessage = {
-    username,
-    message,
-    timestamp: Date.now()
-  };
-  messages.push(newMessage);
-  res.status(201).json({ success: true });
+    res.json({ messages });
 });
 
-// Define the port (default to 3000 if not specified).
+/**
+ * POST /message
+ * Stores a new user message in memory.
+ */
+app.post('/message', (req, res) => {
+    const { username, message } = req.body;
+    if (!username || !message) {
+        return res.status(400).json({ error: 'Both username and message are required.' });
+    }
+    const newMessage = { username, message, timestamp: Date.now() };
+    messages.push(newMessage);
+    res.status(201).json({ success: true });
+});
+
+/**
+ * POST /submit-result
+ * Stores a user's reaction time result.
+ */
+app.post('/submit-result', (req, res) => {
+    const { username, totalReactionTime } = req.body;
+    if (!username || !totalReactionTime) {
+        return res.status(400).json({ error: 'Username and reaction time are required.' });
+    }
+    results.push({ username, totalReactionTime });
+    res.status(201).json({ success: true });
+});
+
+/**
+ * GET /get-results
+ * Returns a list of all user reaction times.
+ */
+app.get('/get-results', (req, res) => {
+    res.json(results);
+});
+
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
