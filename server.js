@@ -11,6 +11,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
+
 // In-memory storage for messages and results
 let messages = [];
 let results = [];
