@@ -27,8 +27,10 @@
         }
 
         function showRandomBackground() {
-            if (gameCount >= 3) {
-                alert("Game Over! Your reaction times: " + reactionTimes.join(", ") + " ms");
+            if (gameCount >= 5) {
+                const totalReactionTime = reactionTimes.reduce((a, b) => a + b, 0);
+                localStorage.setItem("reactionTime", totalReactionTime);
+                window.location.href = "results.html";
                 return;
             }
 
@@ -49,12 +51,7 @@
                 gameCount++;
                 startTime = null;
                 isWaitingForKeyPress = false;
-                if (gameCount < 5) {
-                    showRandomBackground();
-                } else {
-                    alert("Game Over! Your reaction times: " + reactionTimes.join(", ") + " ms");
-                    window.location.href = "main.html";
-                }
+                showRandomBackground();
             }
         }
 

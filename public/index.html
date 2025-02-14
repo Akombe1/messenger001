@@ -3,27 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>Instructions</title>
     <style>
+        #chat {
+            width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #messages {
+            list-style-type: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        #messages li {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        #sendBtn {
+            padding: 10px 20px;
+            border: none;
+            background-color: red;
+            color: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #sendBtn:hover {
+            background-color: darkred;
+        }
         body {
             margin: 0;
             height: 100vh;
-            background: url('start_page.png') no-repeat center center fixed;
+            background: url('instructions.png') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
         }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            document.body.addEventListener("click", function() {
-                window.location.href = "main.html";
+            const usernameInput = document.getElementById("username");
+            const messageInput = document.getElementById("message");
+            const sendBtn = document.getElementById("sendBtn");
+
+            sendBtn.addEventListener("click", function() {
+                const username = usernameInput.value.trim();
+                const message = messageInput.value.trim();
+                
+                if (username && message) {
+                    window.location.href = "instructions.html";
+                } else {
+                    alert("Please enter your name and a message before proceeding.");
+                }
             });
         });
     </script>
 </head>
 <body>
+    <div id="chat">
+        <ul id="messages"></ul>
+        <div class="input-container">
+            <input id="username" type="text" placeholder="Your name" required />
+        </div>
+        <div class="input-container">
+            <input id="message" type="text" placeholder="Type your message" required autocomplete="off" />
+            <button id="sendBtn" type="button">Send</button>
+        </div>
+    </div>
 </body>
 </html>
